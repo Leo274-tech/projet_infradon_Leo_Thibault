@@ -1,10 +1,11 @@
+-- Active: 1772186463800@@127.0.0.1@5432@infradon
 SELECT COUNT(*) FROM staging.inventaire_mobiliers;  -- ~120
 SELECT COUNT(*) FROM staging.signalements;         -- ~200
 SELECT COUNT(*) FROM staging.interventions;        -- ~150
 SELECT COUNT(*) FROM staging.fournisseurs;         -- ~15
 
 -- Types de mobilier
-SELECT type, COUNT(*) FROM staging.inventaire_mobiliers GROUP BY type ORDER BY 2 DESC;
+SELECT type_inventaire, COUNT(*) FROM staging.inventaire_mobiliers GROUP BY type_inventaire ORDER BY 2 DESC;
 
 -- Matériaux
 SELECT materiau, COUNT(*) FROM staging.inventaire_mobiliers GROUP BY materiau;
@@ -15,7 +16,7 @@ FROM staging.inventaire_mobiliers
 GROUP BY date_installation ORDER BY 2 DESC LIMIT 20;
 
 -- Coûts
-SELECT cout_materiel, COUNT(*) FROM staging.interventions GROUP BY cout_materiel ORDER BY 2 DESC;
+SELECT cout_materiau, COUNT(*) FROM staging.interventions GROUP BY cout_materiau ORDER BY 2 DESC;
 
 -- Durées
 SELECT duree, COUNT(*) FROM staging.interventions GROUP BY duree;
@@ -24,5 +25,5 @@ SELECT duree, COUNT(*) FROM staging.interventions GROUP BY duree;
 SELECT technicien, COUNT(*) FROM staging.interventions GROUP BY technicien ORDER BY 2 DESC;
 
 -- Doublons potentiels (même lieu + type)
-SELECT lieu, type, COUNT(*) FROM staging.inventaire_mobiliers
-GROUP BY lieu, type HAVING COUNT(*) > 1;
+SELECT lieu, type_inventaire, COUNT(*) FROM staging.inventaire_mobiliers
+GROUP BY lieu, type_inventaire HAVING COUNT(*) > 1;

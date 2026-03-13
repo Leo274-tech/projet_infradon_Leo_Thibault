@@ -17,12 +17,12 @@ CREATE TABLE staging.inventaire_mobiliers (
 -- Miroir du fichier interventions.csv
 CREATE TABLE staging.interventions (
     date_intervention TEXT,
+    objet_intervention TEXT,
     type_intervention TEXT,
     technicien TEXT,
     duree TEXT,
     cout_materiau TEXT,
-    remarques TEXT,
-    id_signalement TEXT
+    remarques TEXT
 );
 
 -- Miroir du fichier signalements.csv
