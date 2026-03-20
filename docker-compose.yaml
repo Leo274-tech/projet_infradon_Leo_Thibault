@@ -11,7 +11,7 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql/data
       - ./csv/:/csv
-      - ./init-db/:/docker-entrypoint-initdb.d
+      - ./init-db/:/docker-entrypoint-initdb.d # Lance les fichiers du dossier init.db au moment du docker compose up.
 
 volumes:
   pgdata:

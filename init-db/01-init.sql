@@ -7,22 +7,22 @@ CREATE EXTENSION IF NOT EXISTS postgis;
 
 CREATE TABLE IF NOT EXISTS types_inventaire (
     id SERIAL PRIMARY KEY,
-    libelle VARCHAR(50)
+    libelle VARCHAR(50) UNIQUE NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS etats_inventaire (
     id SERIAL PRIMARY KEY,
-    libelle VARCHAR(50)
+    libelle VARCHAR(50) UNIQUE NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS types_materiel (
     id SERIAL PRIMARY KEY,
-    libelle VARCHAR(50)
+    libelle VARCHAR(50) UNIQUE NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS types_intervention (
     id SERIAL PRIMARY KEY,
-    libelle VARCHAR(50)
+    libelle VARCHAR(50) UNIQUE NOT NULL
 );
 
 
@@ -31,9 +31,9 @@ CREATE TABLE IF NOT EXISTS types_intervention (
 
 CREATE TABLE IF NOT EXISTS fournisseurs (
     id SERIAL PRIMARY KEY,
-    entreprise VARCHAR(30),
-    nom_contact VARCHAR(30) NOT NULL,
-    telephone INTEGER,
+    entreprise VARCHAR(30) NOT NULL,
+    nom_contact VARCHAR(30),
+    telephone VARCHAR(15),
     email VARCHAR(50),
     remarque VARCHAR(120)
 );
