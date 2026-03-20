@@ -7,15 +7,13 @@ VALUES ('lampadaire'),
     ('banc'),
     ('poubelle'),
     ('borne recharge'),
-    ('panneau')
-ON CONFLICT (libelle) DO NOTHING;
+    ('panneau') ON CONFLICT (libelle) DO NOTHING;
 
 INSERT INTO
     public.etats_inventaire (libelle)
 VALUES ('à remplacer'),
     ('bon'),
-    ('usé')
-ON CONFLICT (libelle) DO NOTHING;
+    ('usé') ON CONFLICT (libelle) DO NOTHING;
 
 INSERT INTO
     public.types_materiel (libelle)
@@ -24,8 +22,7 @@ VALUES ('bois'),
     ('sodium'),
     ('LED'),
     ('pierre'),
-    ('béton')
-ON CONFLICT (libelle) DO NOTHING;
+    ('béton') ON CONFLICT (libelle) DO NOTHING;
 
 INSERT INTO
     public.types_intervention (libelle)
@@ -36,8 +33,7 @@ VALUES ('peinture'),
     ('hivernage'),
     ('redressage'),
     ('détartrage'),
-    ('autre')
-ON CONFLICT (libelle) DO NOTHING;
+    ('autre') ON CONFLICT (libelle) DO NOTHING;
 
 -- Tables entités
 
@@ -62,6 +58,19 @@ SELECT
         ELSE NULL
     END AS email,
     NULLIF(TRIM(remarque), '')
-FROM staging.fournisseurs
-ON CONFLICT (id) DO NOTHING;
+FROM staging.fournisseurs ON CONFLICT (id) DO NOTHING;
 
+INSERT INTO 
+    public.inventaire_mobilier (
+        id_inventaire,
+        type_inventaire,
+        materiau,
+        lieu,
+        latitude,
+        longitude,
+        date_installation,
+        etat,
+        remarques
+    );
+SELECT id_inventaire, type_inventaire, materiau, lieu, latitude, longitude,
+date_installation, etat, remarques
