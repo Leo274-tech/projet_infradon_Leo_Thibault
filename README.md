@@ -19,5 +19,7 @@ Quelles éléments sont manquants pour répondre au brief?
 Lien du diagramme : [clique ici](https://app.diagrams.net/#G1RyfIgxZ6X6b_RugQosdPgRoexjX0Adxi#%7B%22pageId%22%3A%225_qenR7KUMMb5oFbrNIR%22%7D)
 
 ## Modlèle Logique de Données (MLD)
+Lien du diagramme : [clique ici](https://app.diagrams.net/#G1RyfIgxZ6X6b_RugQosdPgRoexjX0Adxi#%7B%22pageId%22%3A%225_qenR7KUMMb5oFbrNIR%22%7D)
 
 ## Modlèle Physique de Données (MPD)
+Voir `init-db/01-init.sql`
