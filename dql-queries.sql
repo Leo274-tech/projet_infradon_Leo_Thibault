@@ -27,3 +27,5 @@ SELECT technicien, COUNT(*) FROM staging.interventions GROUP BY technicien ORDER
 -- Doublons potentiels (même lieu + type)
 SELECT lieu, type_inventaire, COUNT(*) FROM staging.inventaire_mobiliers
 GROUP BY lieu, type_inventaire HAVING COUNT(*) > 1;
+
+SELECT * FROM public.inventaire_mobiliers;

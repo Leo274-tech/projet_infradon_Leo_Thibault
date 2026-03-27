@@ -1,4 +1,4 @@
--- Active: 1772794232287@@127.0.0.1@5432
+-- Active: 1772186463800@@127.0.0.1@5432@infradon
 
 -- Tables de normalisation
 INSERT INTO
@@ -8,15 +8,13 @@ VALUES ('lampadaire'),
     ('banc'),
     ('poubelle'),
     ('borne recharge'),
-    ('panneau')
-ON CONFLICT (libelle) DO NOTHING;
+    ('panneau') ON CONFLICT (libelle) DO NOTHING;
 
 INSERT INTO
     public.etats_inventaire (libelle)
 VALUES ('à remplacer'),
     ('bon'),
-    ('usé')
-ON CONFLICT (libelle) DO NOTHING;
+    ('usé') ON CONFLICT (libelle) DO NOTHING;
 
 INSERT INTO
     public.types_materiel (libelle)
@@ -25,8 +23,7 @@ VALUES ('bois'),
     ('sodium'),
     ('LED'),
     ('pierre'),
-    ('béton')
-ON CONFLICT (libelle) DO NOTHING;
+    ('béton') ON CONFLICT (libelle) DO NOTHING;
 
 INSERT INTO
     public.types_intervention (libelle)
@@ -37,8 +34,7 @@ VALUES ('peinture'),
     ('hivernage'),
     ('redressage'),
     ('détartrage'),
-    ('autre')
-ON CONFLICT (libelle) DO NOTHING;
+    ('autre') ON CONFLICT (libelle) DO NOTHING;
 
 -- Tables entités
 INSERT INTO
@@ -62,21 +58,21 @@ SELECT
         ELSE NULL
     END AS email,
     NULLIF(TRIM(remarques), '')
-FROM staging.fournisseurs
-ON CONFLICT (id) DO NOTHING;
+FROM staging.fournisseurs ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO
-    public.inventaire_mobilier (
+    public.inventaire_mobiliers (
+        id_inventaire,
         type_inventaire, --id
-        materiau,
+        materiau, --id
         lieu,
         geom,
         date_installation,
-        etat,
+        etat, --id
         remarques
-    );
-
+    )
 SELECT
+    id_inventaire,
     CASE
         WHEN LOWER(TRIM(type_inventaire)) LIKE '%lampadaire%' THEN 1
         WHEN LOWER(TRIM(type_inventaire)) LIKE '%fontaine%' THEN 2
@@ -104,24 +100,24 @@ SELECT
             ),
             CAST(longitude AS DOUBLE PRECISION)
         ),
-        4326
+        2056
     ) AS geom,
     CASE
-        WHEN date_installation ~ '^\d{4}$' THEN TO_DATE(
+        WHEN date_installation ~ '^\d{4}$' THEN TO_DATE (
             '01.01.' || date_installation,
             'DD.MM.YYYY'
         )
-        WHEN date_installation ~ '^\d{2}\.\d{2}\.\d{4}$' THEN TO_DATE(
+        WHEN date_installation ~ '^\d{2}\.\d{2}\.\d{4}$' THEN TO_DATE (
             date_installation,
             'DD.MM.YYYY'
         )
-        WHEN date_installation ~ '^\d{4}-\d{2}-\d{2}$' THEN TO_DATE(
+        WHEN date_installation ~ '^\d{4}-\d{2}-\d{2}$' THEN TO_DATE (
             date_installation,
             'YYYY-MM-DD'
         )
-        WHEN date_installation ~ '^[a-zéû]+ \d{4}$' THEN TO_DATE(
+        WHEN date_installation ~ '^[a-zéû]+ \d{4}$' THEN TO_DATE (
             '01.' || CASE LOWER(
-                    split_part(date_installation, ' ', 1)
+                    split_part (date_installation, ' ', 1)
                 )
                 WHEN 'janvier' THEN '01'
                 WHEN 'février' THEN '02'
@@ -135,7 +131,7 @@ SELECT
                 WHEN 'octobre' THEN '10'
                 WHEN 'novembre' THEN '11'
                 WHEN 'décembre' THEN '12'
-            END || '.' || split_part(date_installation, ' ', 2),
+            END || '.' || split_part (date_installation, ' ', 2),
             'DD.MM.YYYY'
         )
         ELSE NULL
