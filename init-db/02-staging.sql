@@ -42,9 +42,10 @@ CREATE TABLE staging.fournisseurs (
     telephone TEXT,
     email TEXT,
     type_materiel TEXT,
-    remarque TEXT
+    remarques TEXT
 );
 
+-- Importer les données d'Excel
 COPY staging.signalements
 FROM '/csv/signalements.csv'
 WITH (

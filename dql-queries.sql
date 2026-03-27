@@ -1,4 +1,4 @@
--- Active: 1772794232287@@127.0.0.1@5432@infradon
+-- Active: 1772186463800@@127.0.0.1@5432@infradon
 SELECT COUNT(*) FROM staging.inventaire_mobiliers;  -- ~120
 SELECT COUNT(*) FROM staging.signalements;         -- ~200
 SELECT COUNT(*) FROM staging.interventions;        -- ~150

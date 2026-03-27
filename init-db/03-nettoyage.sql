@@ -1,4 +1,5 @@
 -- Active: 1772186463800@@127.0.0.1@5432@infradon
+
 -- Tables de normalisation
 INSERT INTO
     public.types_inventaire (libelle)
@@ -7,13 +8,15 @@ VALUES ('lampadaire'),
     ('banc'),
     ('poubelle'),
     ('borne recharge'),
-    ('panneau') ON CONFLICT (libelle) DO NOTHING;
+    ('panneau')
+ON CONFLICT (libelle) DO NOTHING;
 
 INSERT INTO
     public.etats_inventaire (libelle)
 VALUES ('à remplacer'),
     ('bon'),
-    ('usé') ON CONFLICT (libelle) DO NOTHING;
+    ('usé')
+ON CONFLICT (libelle) DO NOTHING;
 
 INSERT INTO
     public.types_materiel (libelle)
@@ -22,7 +25,8 @@ VALUES ('bois'),
     ('sodium'),
     ('LED'),
     ('pierre'),
-    ('béton') ON CONFLICT (libelle) DO NOTHING;
+    ('béton')
+ON CONFLICT (libelle) DO NOTHING;
 
 INSERT INTO
     public.types_intervention (libelle)
@@ -33,17 +37,17 @@ VALUES ('peinture'),
     ('hivernage'),
     ('redressage'),
     ('détartrage'),
-    ('autre') ON CONFLICT (libelle) DO NOTHING;
+    ('autre')
+ON CONFLICT (libelle) DO NOTHING;
 
 -- Tables entités
-
 INSERT INTO
     public.fournisseurs (
         entreprise,
         nom_contact,
         telephone,
         email,
-        remarque
+        remarques
     )
 SELECT
     entreprise,
@@ -57,13 +61,13 @@ SELECT
         WHEN email LIKE '%@%' THEN email
         ELSE NULL
     END AS email,
-    NULLIF(TRIM(remarque), '')
-FROM staging.fournisseurs ON CONFLICT (id) DO NOTHING;
+    NULLIF(TRIM(remarques), '')
+FROM staging.fournisseurs
+ON CONFLICT (id) DO NOTHING;
 
-INSERT INTO 
+INSERT INTO
     public.inventaire_mobilier (
-        id_inventaire,
-        type_inventaire,
+        type_inventaire, --id
         materiau,
         lieu,
         latitude,
@@ -72,5 +76,23 @@ INSERT INTO
         etat,
         remarques
     );
-SELECT id_inventaire, type_inventaire, materiau, lieu, latitude, longitude,
-date_installation, etat, remarques
+
+SELECT
+    CASE
+        WHEN LOWER(TRIM(type_inventaire)) LIKE '%lampadaire%' THEN 1
+        WHEN LOWER(TRIM(type_inventaire)) LIKE '%fontaine%' THEN 2
+        WHEN LOWER(TRIM(type_inventaire)) LIKE '%banc%' THEN 3
+        WHEN LOWER(TRIM(type_inventaire)) LIKE '%poubelle%' THEN 4
+        WHEN LOWER(TRIM(type_inventaire)) LIKE '%corbeille%' THEN 4
+        WHEN LOWER(TRIM(type_inventaire)) LIKE '%borne%' THEN 5
+        WHEN LOWER(TRIM(type_inventaire)) LIKE '%panneau%' THEN 6
+        ELSE NULL
+    END AS type_inventaire,
+    materiau,
+    lieu,
+    latitude,
+    longitude,
+    date_installation,
+    etat,
+    remarques
+FROM staging.inventaire_mobiliers;

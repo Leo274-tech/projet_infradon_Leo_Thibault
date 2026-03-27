@@ -35,7 +35,7 @@ CREATE TABLE IF NOT EXISTS fournisseurs (
     nom_contact VARCHAR(30),
     telephone VARCHAR(15),
     email VARCHAR(50),
-    remarque VARCHAR(120)
+    remarques VARCHAR(120)
 );
 
 CREATE TABLE IF NOT EXISTS inventaire_mobiliers (
