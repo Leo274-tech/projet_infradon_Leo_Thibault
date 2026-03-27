@@ -29,7 +29,7 @@ CREATE TABLE staging.interventions (
 CREATE TABLE staging.signalements (
     date_signalement TEXT,
     signale_par TEXT,
-    id_inventaire_mobile TEXT,
+    id_inventaire_mobilier TEXT,
     description_probleme TEXT,
     urgence TEXT,
     statut TEXT

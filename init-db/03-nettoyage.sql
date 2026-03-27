@@ -1,4 +1,4 @@
--- Active: 1772186463800@@127.0.0.1@5432@infradon
+-- Active: 1772794232287@@127.0.0.1@5432@infradon
 
 -- Tables de normalisation
 INSERT INTO
@@ -143,3 +143,56 @@ SELECT
     END AS etat,
     remarques
 FROM staging.inventaire_mobiliers;
+
+INSERT INTO
+public.signalements (
+    date_signalement,
+    signale_par,
+    id_inventaire, --FK
+    description_probleme,
+    urgence,
+    statut
+);
+
+SELECT
+CASE
+        WHEN date_signalement ~ '^\d{4}$' THEN TO_DATE (
+            '01.01.' || date_signalement,
+            'DD.MM.YYYY'
+        )
+        WHEN date_signalement ~ '^\d{2}\.\d{2}\.\d{4}$' THEN TO_DATE (
+            date_signalement,
+            'DD.MM.YYYY'
+        )
+        WHEN date_signalement ~ '^\d{4}-\d{2}-\d{2}$' THEN TO_DATE (
+            date_signalement,
+            'YYYY-MM-DD'
+        )
+        WHEN date_signalement ~ '^[a-zéû]+ \d{4}$' THEN TO_DATE (
+            '01.' || CASE LOWER(
+                    split_part (date_signalement, ' ', 1)
+                )
+                WHEN 'janvier' THEN '01'
+                WHEN 'février' THEN '02'
+                WHEN 'mars' THEN '03'
+                WHEN 'avril' THEN '04'
+                WHEN 'mai' THEN '05'
+                WHEN 'juin' THEN '06'
+                WHEN 'juillet' THEN '07'
+                WHEN 'août' THEN '08'
+                WHEN 'septembre' THEN '09'
+                WHEN 'octobre' THEN '10'
+                WHEN 'novembre' THEN '11'
+                WHEN 'décembre' THEN '12'
+            END || '.' || split_part (date_signalement, ' ', 2),
+            'DD.MM.YYYY'
+        )
+        ELSE NULL
+    END AS date_signalement,
+    signale_par,
+    id_inventaire_mobilier, --FK
+    description_probleme,
+    urgence,
+    statut
+    FROM staging.signalements;
+
