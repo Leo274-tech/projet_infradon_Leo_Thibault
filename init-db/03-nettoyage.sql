@@ -70,8 +70,7 @@ INSERT INTO
         type_inventaire, --id
         materiau,
         lieu,
-        latitude,
-        longitude,
+        geom,
         date_installation,
         etat,
         remarques
@@ -89,7 +88,7 @@ SELECT
         ELSE NULL
     END AS type_inventaire,
     CASE
-    WHEN LOWER(TRIM(materiau)) LIKE '%bois%' THEN 1
+        WHEN LOWER(TRIM(materiau)) LIKE '%bois%' THEN 1
         WHEN LOWER(TRIM(materiau)) LIKE '%métal%' THEN 2
         WHEN LOWER(TRIM(materiau)) LIKE '%sodium%' THEN 3
         WHEN LOWER(TRIM(materiau)) LIKE '%LED%' THEN 4
@@ -98,9 +97,53 @@ SELECT
         ELSE NULL
     END AS materiau,
     lieu,
-    latitude,
-    longitude,
-    date_installation,
-    etat,
+    ST_SetSRID (
+        ST_MakePoint (
+            (
+                CAST(latitude AS DOUBLE PRECISION)
+            ),
+            CAST(longitude AS DOUBLE PRECISION)
+        ),
+        4326
+    ) AS geom,
+    CASE
+        WHEN date_installation ~ '^\d{4}$' THEN TO_DATE(
+            '01.01.' || date_installation,
+            'DD.MM.YYYY'
+        )
+        WHEN date_installation ~ '^\d{2}\.\d{2}\.\d{4}$' THEN TO_DATE(
+            date_installation,
+            'DD.MM.YYYY'
+        )
+        WHEN date_installation ~ '^\d{4}-\d{2}-\d{2}$' THEN TO_DATE(
+            date_installation,
+            'YYYY-MM-DD'
+        )
+        WHEN date_installation ~ '^[a-zéû]+ \d{4}$' THEN TO_DATE(
+            '01.' || CASE LOWER(
+                    split_part(date_installation, ' ', 1)
+                )
+                WHEN 'janvier' THEN '01'
+                WHEN 'février' THEN '02'
+                WHEN 'mars' THEN '03'
+                WHEN 'avril' THEN '04'
+                WHEN 'mai' THEN '05'
+                WHEN 'juin' THEN '06'
+                WHEN 'juillet' THEN '07'
+                WHEN 'août' THEN '08'
+                WHEN 'septembre' THEN '09'
+                WHEN 'octobre' THEN '10'
+                WHEN 'novembre' THEN '11'
+                WHEN 'décembre' THEN '12'
+            END || '.' || split_part(date_installation, ' ', 2),
+            'DD.MM.YYYY'
+        )
+        ELSE NULL
+    END AS date_installation,
+    CASE
+        WHEN LOWER(TRIM(etat)) LIKE '%remplace%' THEN 1
+        WHEN LOWER(TRIM(etat)) LIKE '%bon%' THEN 2
+        WHEN LOWER(TRIM(etat)) LIKE '%usé%' THEN 3
+    END AS etat,
     remarques
 FROM staging.inventaire_mobiliers;
