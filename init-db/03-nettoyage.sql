@@ -1,4 +1,4 @@
--- Active: 1772186463800@@127.0.0.1@5432@infradon
+-- Active: 1772794232287@@127.0.0.1@5432
 
 -- Tables de normalisation
 INSERT INTO
@@ -88,7 +88,15 @@ SELECT
         WHEN LOWER(TRIM(type_inventaire)) LIKE '%panneau%' THEN 6
         ELSE NULL
     END AS type_inventaire,
-    materiau,
+    CASE
+    WHEN LOWER(TRIM(materiau)) LIKE '%bois%' THEN 1
+        WHEN LOWER(TRIM(materiau)) LIKE '%métal%' THEN 2
+        WHEN LOWER(TRIM(materiau)) LIKE '%sodium%' THEN 3
+        WHEN LOWER(TRIM(materiau)) LIKE '%LED%' THEN 4
+        WHEN LOWER(TRIM(materiau)) LIKE '%pierre%' THEN 5
+        WHEN LOWER(TRIM(materiau)) LIKE '%béton%' THEN 6
+        ELSE NULL
+    END AS materiau,
     lieu,
     latitude,
     longitude,
