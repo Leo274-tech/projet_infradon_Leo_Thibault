@@ -1,4 +1,4 @@
--- Active: 1772186463800@@127.0.0.1@5432@infradon
+-- Active: 1776325076709@@127.0.0.1@5432@infradon
 SELECT COUNT(*) FROM staging.inventaire_mobiliers;  -- ~120
 SELECT COUNT(*) FROM staging.signalements;         -- ~200
 SELECT COUNT(*) FROM staging.interventions;        -- ~150
@@ -29,3 +29,5 @@ SELECT lieu, type_inventaire, COUNT(*) FROM staging.inventaire_mobiliers
 GROUP BY lieu, type_inventaire HAVING COUNT(*) > 1;
 
 SELECT * FROM public.inventaire_mobiliers;
+SELECT * FROM public.signalements;
+SELECT * FROM public.interventions;

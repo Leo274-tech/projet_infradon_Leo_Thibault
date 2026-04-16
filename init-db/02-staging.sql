@@ -1,3 +1,4 @@
+-- Active: 1776323427902@@127.0.0.1@5432
 -- Créer un schéma dédié pour la staging
 CREATE SCHEMA IF NOT EXISTS staging;
 
@@ -20,7 +21,7 @@ CREATE TABLE staging.interventions (
     objet_intervention TEXT,
     type_intervention TEXT,
     technicien TEXT,
-    duree TEXT,
+    duree_heure TEXT,
     cout_materiau TEXT,
     remarques TEXT
 );
@@ -29,10 +30,10 @@ CREATE TABLE staging.interventions (
 CREATE TABLE staging.signalements (
     date_signalement TEXT,
     signale_par TEXT,
-    id_inventaire_mobilier TEXT,
+    inventaire_mobilier TEXT,
     description_probleme TEXT,
-    urgence TEXT,
-    statut TEXT
+    id_urgence TEXT,
+    id_statut TEXT
 );
 
 -- Miroir du fichier fournisseurs.csv
