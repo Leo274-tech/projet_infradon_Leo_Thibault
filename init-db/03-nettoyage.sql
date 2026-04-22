@@ -8,38 +8,34 @@ VALUES ('lampadaire'),
     ('banc'),
     ('poubelle'),
     ('borne recharge'),
-    ('panneau')
-ON CONFLICT (libelle) DO NOTHING;
+    ('panneau'),
+    ('autre');
 
 INSERT INTO
     public.etats_inventaire (libelle)
 VALUES ('à remplacer'),
     ('bon'),
-    ('usé')
-ON CONFLICT (libelle) DO NOTHING;
+    ('usé');
 
 INSERT INTO
     public.urgences_signalement (libelle)
 VALUES ('urgent'),
-    ('normal')
-ON CONFLICT (libelle) DO NOTHING;
+    ('normal');
 
 INSERT INTO
     public.statuts_signalement (libelle)
 VALUES ('fait'),
     ('en attente'),
-    ('en cours')
-ON CONFLICT (libelle) DO NOTHING;
+    ('en cours');
 
 INSERT INTO
-    public.types_materiel (libelle)
+    public.types_materiau (libelle)
 VALUES ('bois'),
     ('métal'),
     ('sodium'),
     ('LED'),
     ('pierre'),
-    ('béton')
-ON CONFLICT (libelle) DO NOTHING;
+    ('béton');
 
 INSERT INTO
     public.types_intervention (libelle)
@@ -50,8 +46,7 @@ VALUES ('peinture'),
     ('hivernage'),
     ('redressage'),
     ('détartrage'),
-    ('autre')
-ON CONFLICT (libelle) DO NOTHING;
+    ('autre');
 
 -- Tables entités
 INSERT INTO
@@ -75,42 +70,40 @@ SELECT
         ELSE NULL
     END AS email,
     NULLIF(TRIM(remarques), '')
-FROM staging.fournisseurs
-ON CONFLICT (id) DO NOTHING;
+FROM staging.fournisseurs;
 
 INSERT INTO
     public.inventaire_mobiliers (
         id_inventaire,
-        type_inventaire, --id
-        materiau, --id
+        id_type_inventaire,
+        id_type_materiau,
         lieu,
         geom,
         date_installation,
-        etat, --id
-        remarques,
-        id_fournisseur
+        id_etat,
+        remarques
     )
 SELECT
     id_inventaire,
     CASE
-        WHEN LOWER(TRIM(type_inventaire)) LIKE '%lampadaire%' THEN 1
-        WHEN LOWER(TRIM(type_inventaire)) LIKE '%fontaine%' THEN 2
-        WHEN LOWER(TRIM(type_inventaire)) LIKE '%banc%' THEN 3
-        WHEN LOWER(TRIM(type_inventaire)) LIKE '%poubelle%' THEN 4
-        WHEN LOWER(TRIM(type_inventaire)) LIKE '%corbeille%' THEN 4
-        WHEN LOWER(TRIM(type_inventaire)) LIKE '%borne%' THEN 5
-        WHEN LOWER(TRIM(type_inventaire)) LIKE '%panneau%' THEN 6
-        ELSE NULL
-    END AS type_inventaire,
+        WHEN LOWER(id_type_inventaire) LIKE '%lampadaire%' THEN 1
+        WHEN LOWER(id_type_inventaire) LIKE '%fontaine%' THEN 2
+        WHEN LOWER(id_type_inventaire) LIKE '%banc%' THEN 3
+        WHEN LOWER(id_type_inventaire) LIKE '%poubelle%' THEN 4
+        WHEN LOWER(id_type_inventaire) LIKE '%corbeille%' THEN 4
+        WHEN LOWER(id_type_inventaire) LIKE '%borne%' THEN 5
+        WHEN LOWER(id_type_inventaire) LIKE '%panneau%' THEN 6
+        ELSE 7 -- 'autre'
+    END AS id_type_inventaire,
     CASE
-        WHEN LOWER(TRIM(materiau)) LIKE '%bois%' THEN 1
-        WHEN LOWER(TRIM(materiau)) LIKE '%métal%' THEN 2
-        WHEN LOWER(TRIM(materiau)) LIKE '%sodium%' THEN 3
-        WHEN LOWER(TRIM(materiau)) LIKE '%LED%' THEN 4
-        WHEN LOWER(TRIM(materiau)) LIKE '%pierre%' THEN 5
-        WHEN LOWER(TRIM(materiau)) LIKE '%béton%' THEN 6
+        WHEN LOWER(id_type_materiau) LIKE '%bois%' THEN 1
+        WHEN LOWER(id_type_materiau) LIKE '%métal%' THEN 2
+        WHEN LOWER(id_type_materiau) LIKE '%sodium%' THEN 3
+        WHEN LOWER(id_type_materiau) LIKE '%LED%' THEN 4
+        WHEN LOWER(id_type_materiau) LIKE '%pierre%' THEN 5
+        WHEN LOWER(id_type_materiau) LIKE '%béton%' THEN 6
         ELSE NULL
-    END AS materiau,
+    END AS id_type_materiau,
     lieu,
     ST_SetSRID (
         ST_MakePoint (
@@ -121,95 +114,28 @@ SELECT
         ),
         2056
     ) AS geom,
+    normalize_date (date_installation) AS date_installation,
     CASE
-        WHEN date_installation ~ '^\d{4}$' THEN TO_DATE(
-            '01.01.' || date_installation,
-            'DD.MM.YYYY'
-        )
-        WHEN date_installation ~ '^\d{2}\.\d{2}\.\d{4}$' THEN TO_DATE(
-            date_installation,
-            'DD.MM.YYYY'
-        )
-        WHEN date_installation ~ '^\d{4}-\d{2}-\d{2}$' THEN TO_DATE(
-            date_installation,
-            'YYYY-MM-DD'
-        )
-        WHEN date_installation ~ '^[a-zéû]+ \d{4}$' THEN TO_DATE(
-            '01.' || CASE LOWER(
-                    split_part(date_installation, ' ', 1)
-                )
-                WHEN 'janvier' THEN '01'
-                WHEN 'février' THEN '02'
-                WHEN 'mars' THEN '03'
-                WHEN 'avril' THEN '04'
-                WHEN 'mai' THEN '05'
-                WHEN 'juin' THEN '06'
-                WHEN 'juillet' THEN '07'
-                WHEN 'août' THEN '08'
-                WHEN 'septembre' THEN '09'
-                WHEN 'octobre' THEN '10'
-                WHEN 'novembre' THEN '11'
-                WHEN 'décembre' THEN '12'
-            END || '.' || split_part(date_installation, ' ', 2),
-            'DD.MM.YYYY'
-        )
-        ELSE NULL
-    END AS date_installation,
-    CASE
-        WHEN LOWER(TRIM(etat)) LIKE '%remplace%' THEN 1
-        WHEN LOWER(TRIM(etat)) LIKE '%bon%' THEN 2
-        WHEN LOWER(TRIM(etat)) LIKE '%usé%' THEN 3
-    END AS etat,
-    remarques,
-    id_fournisseur -- A FAIRE
+        WHEN LOWER(id_etat) LIKE '%remplace%' THEN 1
+        WHEN LOWER(id_etat) LIKE '%bon%' THEN 2
+        WHEN LOWER(id_etat) LIKE '%usé%' THEN 3
+    END AS id_etat,
+    remarques
 FROM staging.inventaire_mobiliers;
 
 INSERT INTO
     public.signalements (
         date_signalement,
         signale_par,
-        inventaire_mobilier, --FK
+        inventaire_mobilier, -- colonne temporaire pour permettre une jointure
         description_probleme,
         id_urgence,
         id_statut
     )
 SELECT
-    CASE
-        WHEN date_signalement ~ '^\d{4}$' THEN TO_DATE(
-            '01.01.' || date_signalement,
-            'DD.MM.YYYY'
-        )
-        WHEN date_signalement ~ '^\d{2}\.\d{2}\.\d{4}$' THEN TO_DATE(
-            date_signalement,
-            'DD.MM.YYYY'
-        )
-        WHEN date_signalement ~ '^\d{4}-\d{2}-\d{2}$' THEN TO_DATE(
-            date_signalement,
-            'YYYY-MM-DD'
-        )
-        WHEN date_signalement ~ '^[a-zéû]+ \d{4}$' THEN TO_DATE(
-            '01.' || CASE LOWER(
-                    split_part(date_signalement, ' ', 1)
-                )
-                WHEN 'janvier' THEN '01'
-                WHEN 'février' THEN '02'
-                WHEN 'mars' THEN '03'
-                WHEN 'avril' THEN '04'
-                WHEN 'mai' THEN '05'
-                WHEN 'juin' THEN '06'
-                WHEN 'juillet' THEN '07'
-                WHEN 'août' THEN '08'
-                WHEN 'septembre' THEN '09'
-                WHEN 'octobre' THEN '10'
-                WHEN 'novembre' THEN '11'
-                WHEN 'décembre' THEN '12'
-            END || '.' || split_part(date_signalement, ' ', 2),
-            'DD.MM.YYYY'
-        )
-        ELSE NULL
-    END AS date_signalement,
+    normalize_date (date_signalement) AS date_signalement,
     signale_par,
-    inventaire_mobilier, --A mettre une FK si possible -> processus manuel
+    inventaire_mobilier,
     description_probleme,
     CASE
         WHEN s.id_urgence IS NULL
@@ -228,50 +154,19 @@ FROM staging.signalements s
 INSERT INTO
     public.interventions (
         date_intervention,
+        inventaire_mobilier, -- colonne temporaire pour permettre une jointure
         type_intervention,
         technicien,
         duree_heure,
         cout_materiau,
-        remarques,
-        id_signalement
+        remarques
+        -- id_signalement est très difficile à compléter et n'est pas utile pour notre brief. La colonne sera donc ignorée.
     )
 SELECT
+    normalize_date (date_intervention) AS date_intervention,
+    inventaire_mobilier,
     CASE
-        WHEN date_intervention ~ '^\d{4}$' THEN TO_DATE(
-            '01.01.' || date_intervention,
-            'DD.MM.YYYY'
-        )
-        WHEN date_intervention ~ '^\d{2}\.\d{2}\.\d{4}$' THEN TO_DATE(
-            date_intervention,
-            'DD.MM.YYYY'
-        )
-        WHEN date_intervention ~ '^\d{4}-\d{2}-\d{2}$' THEN TO_DATE(
-            date_intervention,
-            'YYYY-MM-DD'
-        )
-        WHEN date_intervention ~ '^[a-zéû]+ \d{4}$' THEN TO_DATE(
-            '01.' || CASE LOWER(
-                    split_part(date_intervention, ' ', 1)
-                )
-                WHEN 'janvier' THEN '01'
-                WHEN 'février' THEN '02'
-                WHEN 'mars' THEN '03'
-                WHEN 'avril' THEN '04'
-                WHEN 'mai' THEN '05'
-                WHEN 'juin' THEN '06'
-                WHEN 'juillet' THEN '07'
-                WHEN 'août' THEN '08'
-                WHEN 'septembre' THEN '09'
-                WHEN 'octobre' THEN '10'
-                WHEN 'novembre' THEN '11'
-                WHEN 'décembre' THEN '12'
-            END || '.' || split_part(date_intervention, ' ', 2),
-            'DD.MM.YYYY'
-        )
-        ELSE NULL
-    END AS date_intervention,
-    CASE
-        WHEN LOWER(TRIM(type_intervention)) LIKE '%' || ti.libelle || '%' THEN ti.id
+        WHEN LOWER(type_intervention) LIKE '%' || ti.libelle || '%' THEN ti.id
         ELSE (
             SELECT id
             FROM public.types_intervention
@@ -311,8 +206,60 @@ SELECT
         )::FLOAT
         ELSE NULL
     END AS cout_materiau,
-    remarques,
-    NULL AS id_signalement --A CHANGER par la vraie FK
+    remarques
 FROM
     staging.interventions i
-    LEFT JOIN types_intervention ti ON LOWER(TRIM(i.type_intervention)) LIKE '%' || ti.libelle || '%';
+    LEFT JOIN types_intervention ti ON LOWER(i.type_intervention) LIKE '%' || ti.libelle || '%';
+
+INSERT INTO
+    public.interventions_inventaires (
+        id_intervention,
+        id_inventaire
+    )
+SELECT DISTINCT
+    ON (i.id) i.id AS id_intervention,
+    im.id AS id_inventaire
+FROM public.inventaire_mobiliers im
+    LEFT JOIN public.types_inventaire ti ON im.id_type_inventaire = ti.id
+    INNER JOIN public.interventions i ON i.inventaire_mobilier ILIKE '%' || ti.libelle || '%' || im.lieu || '%'
+ORDER BY i.id, im.date_installation ASC;
+
+ALTER TABLE public.interventions DROP COLUMN inventaire_mobilier;
+
+INSERT INTO
+    public.signalements_inventaires (id_signalement, id_inventaire)
+SELECT DISTINCT
+    ON (s.id) s.id AS id_signalement,
+    im.id AS id_inventaire
+FROM public.inventaire_mobiliers im
+    LEFT JOIN public.types_inventaire ti ON im.id_type_inventaire = ti.id
+    INNER JOIN public.signalements s ON s.inventaire_mobilier ILIKE '%' || ti.libelle || '%' || im.lieu || '%'
+ORDER BY s.id, im.date_installation ASC;
+
+ALTER TABLE public.signalements DROP COLUMN inventaire_mobilier;
+
+WITH
+    fournisseurs_normalises AS (
+        SELECT entreprise, regexp_split_to_table(id_type_inventaire, ',') AS types_normalises
+        FROM staging.fournisseurs
+    )
+    INSERT INTO
+    public.fournisseurs_typesinventaire (
+        id_fournisseur,
+        id_type_inventaire
+    )
+SELECT
+    pf.id AS id_fournisseur,
+    CASE
+        WHEN LOWER(TRIM(fn.types_normalises)) LIKE '%lampadaire%' THEN 1
+        WHEN LOWER(TRIM(fn.types_normalises)) LIKE '%fontaine%' THEN 2
+        WHEN LOWER(TRIM(fn.types_normalises)) LIKE '%banc%' THEN 3
+        WHEN LOWER(TRIM(fn.types_normalises)) LIKE '%poubelle%' THEN 4
+        WHEN LOWER(TRIM(fn.types_normalises)) LIKE '%corbeille%' THEN 4
+        WHEN LOWER(TRIM(fn.types_normalises)) LIKE '%borne%' THEN 5
+        WHEN LOWER(TRIM(fn.types_normalises)) LIKE '%panneau%' THEN 6
+        ELSE 7 -- 'autre'
+    END AS id_type_inventaire
+FROM
+    fournisseurs_normalises fn
+    INNER JOIN public.fournisseurs pf ON fn.entreprise = pf.entreprise;

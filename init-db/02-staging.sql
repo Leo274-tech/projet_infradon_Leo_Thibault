@@ -1,24 +1,24 @@
--- Active: 1776323427902@@127.0.0.1@5432
+-- Active: 1776325076709@@127.0.0.1@5432@infradon
 -- Créer un schéma dédié pour la staging
 CREATE SCHEMA IF NOT EXISTS staging;
 
 -- Miroir du fichier mobilier.csv
 CREATE TABLE staging.inventaire_mobiliers (
     id_inventaire TEXT,
-    type_inventaire TEXT,
-    materiau TEXT,
+    id_type_inventaire TEXT,
+    id_type_materiau TEXT,
     lieu TEXT,
     latitude TEXT,
     longitude TEXT,
     date_installation TEXT,
-    etat TEXT,
+    id_etat TEXT,
     remarques TEXT
 );
 
 -- Miroir du fichier interventions.csv
 CREATE TABLE staging.interventions (
     date_intervention TEXT,
-    objet_intervention TEXT,
+    inventaire_mobilier TEXT,
     type_intervention TEXT,
     technicien TEXT,
     duree_heure TEXT,
@@ -42,7 +42,7 @@ CREATE TABLE staging.fournisseurs (
     nom_contact TEXT,
     telephone TEXT,
     email TEXT,
-    type_materiel TEXT,
+    id_type_inventaire TEXT,
     remarques TEXT
 );
 
