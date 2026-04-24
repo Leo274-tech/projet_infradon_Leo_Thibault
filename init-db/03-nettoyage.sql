@@ -160,7 +160,7 @@ INSERT INTO
         duree_heure,
         cout_materiau,
         remarques
-        -- id_signalement est très difficile à compléter et n'est pas utile pour notre brief. La colonne sera donc ignorée.
+        -- id_signalement est très difficile à compléter de manière rigoureuse et n'est pas utile pour notre brief. La colonne sera donc ignorée.
     )
 SELECT
     normalize_date (date_intervention) AS date_intervention,
@@ -243,7 +243,7 @@ WITH
         SELECT entreprise, regexp_split_to_table(id_type_inventaire, ',') AS types_normalises
         FROM staging.fournisseurs
     )
-    INSERT INTO
+INSERT INTO
     public.fournisseurs_typesinventaire (
         id_fournisseur,
         id_type_inventaire

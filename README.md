@@ -1,19 +1,29 @@
 # Projet Léo & Thibault
 
 ## Analyse
-### Problèmes de qualité
-- Les données ne sont pas normalisées : tables de valeurs à faire impérativement
-- Certaines cases sont NULL alors qu’elles ne devraient pas : implémenter des contraintes NOT NULL
+### Problèmes de Qualité
+- Les données ne sont pas normalisées -> tables de valeurs à faire impérativement
+- Certaines cases sont NULL alors qu’elles ne devraient pas -> implémenter des contraintes NOT NULL
 - Les colonnes latitude / longitude doivent être transformées en geom
 
-### Colonnes utiles
-Quelles colonnes sont utiles pour répondre au brief?
+### Tables et Colonnes Importantes
+Les tables inventaire_mobiliers et interventions vont être primordiales pour le brief.
+inventaire_mobiliers :
+- id_inventaire
+- id_type_materiel
+- lieu
+- geom
+- date_installation
 
-### Relations entre les fichiers excel
--> Voir MCD
+interventions :
+- date_intervention
+- cout_materiau
 
-### Éléments manquants
-Quelles éléments sont manquants pour répondre au brief?
+interventions_inventaires :
+- pour les jointures
+
+### Éléments Manquants & Limites
+Dans les interventions, les inventaires du même type et du même lieu ne sont pas différencié. Si deux lampadaires partagent la même zone, il devront donc se partager également le nombre d'interventions.
 
 ## Notes
 - Certains fichier CSV ont été modifiés manuellement pour corriger des erreurs de frappe ou d'orthographe permettant ainsi de remplir entièrement les tables de liaison. [voir `img/Screenshot 2026-04-22 at 6.31.21 PM.png`]
