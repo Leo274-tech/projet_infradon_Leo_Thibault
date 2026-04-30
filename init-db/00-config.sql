@@ -1,7 +1,7 @@
 
 CREATE EXTENSION IF NOT EXISTS postgis;
 
--- Création d'une méthode pour normaliser une date (On effectue cette opération 3 fois.)
+-- Création d'une fonction pour normaliser une date (On effectue cette opération 3 fois.)
 CREATE FUNCTION normalize_date(date_string TEXT)
 RETURNS DATE 
 LANGUAGE sql
