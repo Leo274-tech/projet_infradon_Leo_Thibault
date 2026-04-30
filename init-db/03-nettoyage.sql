@@ -99,7 +99,7 @@ SELECT
         WHEN LOWER(id_type_materiau) LIKE '%bois%' THEN 1
         WHEN LOWER(id_type_materiau) LIKE '%métal%' THEN 2
         WHEN LOWER(id_type_materiau) LIKE '%sodium%' THEN 3
-        WHEN LOWER(id_type_materiau) LIKE '%LED%' THEN 4
+        WHEN LOWER(id_type_materiau) LIKE '%led%' THEN 4
         WHEN LOWER(id_type_materiau) LIKE '%pierre%' THEN 5
         WHEN LOWER(id_type_materiau) LIKE '%béton%' THEN 6
         ELSE NULL

@@ -30,12 +30,23 @@ Dans les interventions, les inventaires du même type et du même lieu ne sont p
 
 - La description de interventions(objet) n'était pas assez précise our relier les inventaire_mobiliers et les interventions. Certains lieux possèdent plusieurs objets du même type les rendant indistinguables. Nous avons donc choisi d'attribuer l'intervention à l'**objet d'inventaire le plus ancien** en cas de doute.
 
-
-## Modlèle Conceptuel de Données (MCD)
+## Modélisation des données
+### Modlèle Conceptuel de Données (MCD)
 Lien du diagramme : [clique ici](https://app.diagrams.net/#G1RyfIgxZ6X6b_RugQosdPgRoexjX0Adxi#%7B%22pageId%22%3A%225_qenR7KUMMb5oFbrNIR%22%7D)
 
-## Modlèle Logique de Données (MLD)
+### Modlèle Logique de Données (MLD)
 Lien du diagramme : [clique ici](https://app.diagrams.net/#G1RyfIgxZ6X6b_RugQosdPgRoexjX0Adxi#%7B%22pageId%22%3A%225_qenR7KUMMb5oFbrNIR%22%7D)
 wqq
-## Modlèle Physique de Données (MPD)
+### Modlèle Physique de Données (MPD)
 Voir `init-db/01-init.sql`
+
+## Livrables
+### Détails lampadaires
+fichier : `livrables/v_lampadaires_detail.sql`
+
+### Priorités lampadaires
+fichier : `livrables/v_lampadaires_priorite.sql`
+
+
+### Budget lampadaires
+fichier : `livrables/v_lampadaires_budget.sql`

@@ -104,7 +104,8 @@ FROM
     INNER JOIN interventions_inventaires a ON i.id = a.id_intervention
     INNER JOIN inventaire_mobiliers im ON a.id_inventaire = im.id
     LEFT JOIN types_inventaire ti ON im.id_type_inventaire = ti.id
-    WHERE ti.libelle = 'lampadaire';
+WHERE
+    ti.libelle = 'lampadaire';
 
 -- Signalements
 -- Vérification des erreurs
@@ -123,10 +124,22 @@ WHERE
     b.id_signalement IS NULL;
 
 SELECT * FROM interventions_inventaires;
+
 SELECT * FROM signalements_inventaires;
+
 SELECT * FROM public.inventaire_mobiliers;
+
 SELECT * FROM public.signalements;
+
 SELECT * FROM public.interventions;
+
 SELECT * FROM public.fournisseurs;
+
 SELECT * FROM public.fournisseurs_typesinventaire;
+
 SELECT id_type_inventaire FROM staging.fournisseurs;
+
+SELECT tm.libelle
+FROM
+    inventaire_mobiliers
+    LEFT JOIN types_materiau tm ON inventaire_mobiliers.id_type_materiau = tm.id;
