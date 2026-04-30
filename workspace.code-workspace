@@ -1,0 +1,17 @@
+{
+	"folders": [],
+	"settings": {
+		"java.project.sourcePaths": [
+			"java/type",
+			"java/tuto",
+			"java/tableau",
+			"java/projet",
+			"java/début",
+			"java/classes et objet",
+			"java/algebre boul",
+			"java/Polymorphisme",
+			"java/Encapsulation",
+			"java/S2p2/exo1"
+		]
+	}
+}
