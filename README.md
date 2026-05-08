@@ -31,11 +31,9 @@ Dans les interventions, les inventaires du même type et du même lieu ne sont p
 - La description de interventions(objet) n'était pas assez précise our relier les inventaire_mobiliers et les interventions. Certains lieux possèdent plusieurs objets du même type les rendant indistinguables. Nous avons donc choisi d'attribuer l'intervention à l'**objet d'inventaire le plus ancien** en cas de doute.
 
 ## Modélisation des données
-### Modlèle Conceptuel de Données (MCD)
-Lien du diagramme : [clique ici](https://app.diagrams.net/#G1RyfIgxZ6X6b_RugQosdPgRoexjX0Adxi#%7B%22pageId%22%3A%225_qenR7KUMMb5oFbrNIR%22%7D)
-
-### Modlèle Logique de Données (MLD)
-Lien du diagramme : [clique ici](https://app.diagrams.net/#G1RyfIgxZ6X6b_RugQosdPgRoexjX0Adxi#%7B%22pageId%22%3A%225_qenR7KUMMb5oFbrNIR%22%7D)
+### Modlèle Conceptuel de Données (MCD) & Modlèle Logique de Données (MLD)
+Lien des diagramme : [clique ici](https://app.diagrams.net/#G1RyfIgxZ6X6b_RugQosdPgRoexjX0Adxi#%7B%22pageId%22%3A%225_qenR7KUMMb5oFbrNIR%22%7D)
+*Deux pages existent, une pour la version originale, et une pour la version mise à jour et fidèle à l'implémentation physique.*
 
 ### Modlèle Physique de Données (MPD)
 Voir `init-db/01-init.sql`
