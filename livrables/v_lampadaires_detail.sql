@@ -1,4 +1,4 @@
--- Active: 1776325076709@@127.0.0.1@5432@infradon
+-- Active: 1772794232287@@127.0.0.1@5432@infradon
 SELECT 
     im.id_inventaire AS id_lampadaire,
     im.lieu AS lieu_lampadaire,
