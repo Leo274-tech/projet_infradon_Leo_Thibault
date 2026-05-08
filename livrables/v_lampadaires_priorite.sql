@@ -5,8 +5,7 @@ SELECT
     (COUNT(i.*) * 3) + (EXTRACT(YEAR FROM AGE(im.date_installation)) * 2) + (SUM(i.cout_materiau) / 100) AS score
 FROM
     inventaire_mobiliers im
-    LEFT JOIN interventions_inventaires a ON im.id = a.id_inventaire
-    LEFT JOIN interventions i ON a.id_intervention = i.id
+    LEFT JOIN interventions i ON im.id = i.id_inventaire
     INNER JOIN types_inventaire ti ON im.id_type_inventaire = ti.id
 WHERE
     ti.libelle = 'lampadaire'
@@ -40,8 +39,7 @@ SELECT
     (COUNT(i.*) * 3) + (EXTRACT(YEAR FROM AGE(im.date_installation)) * 2) + (SUM(i.cout_materiau) / 100) AS score_final
 FROM
     inventaire_mobiliers im
-    LEFT JOIN interventions_inventaires a ON im.id = a.id_inventaire
-    LEFT JOIN interventions i ON a.id_intervention = i.id
+    LEFT JOIN interventions i ON im.id = i.id_inventaire
     INNER JOIN types_inventaire ti ON im.id_type_inventaire = ti.id
     INNER JOIN nb_par_zone nz ON im.lieu = nz.lieu
 WHERE

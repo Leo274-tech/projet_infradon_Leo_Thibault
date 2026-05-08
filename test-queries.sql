@@ -58,7 +58,7 @@ HAVING
 -- Interventions
 SELECT DISTINCT
     ON (i.id) i.id,
-    i.inventaire_mobilier,
+    i.id_inventaire,
     i.date_intervention,
     im.id,
     ti.libelle,
@@ -67,13 +67,13 @@ SELECT DISTINCT
 FROM
     public.inventaire_mobiliers im
     LEFT JOIN types_inventaire ti ON im.id_type_inventaire = ti.id
-    INNER JOIN public.interventions i ON i.inventaire_mobilier ILIKE '%' || ti.libelle || '%' || im.lieu || '%'
+    INNER JOIN public.interventions i ON i.id_inventaire = im.id
 ORDER BY i.id, im.date_installation ASC;
 
-SELECT inventaire_mobilier, COUNT(*)
+SELECT id_inventaire, COUNT(*)
 FROM public.interventions
 GROUP BY
-    inventaire_mobilier
+    id_inventaire
 HAVING
     COUNT(*) > 1;
 
@@ -84,15 +84,14 @@ WHERE
     ti.libelle = 'lampadaire';
 
 -- Vérification des erreurs
-SELECT i.id, i.inventaire_mobilier, i.date_intervention
+SELECT i.id, i.id_inventaire, i.date_intervention
 FROM public.interventions i
     LEFT JOIN (
         SELECT DISTINCT
             ON (i.id) i.id AS id_intervention, im.id AS id_inventaire
         FROM
             public.inventaire_mobiliers im
-            LEFT JOIN types_inventaire ti ON im.id_type_inventaire = ti.id
-            INNER JOIN public.interventions i ON i.inventaire_mobilier ILIKE '%' || ti.libelle || '%' || im.lieu || '%'
+            INNER JOIN public.interventions i ON i.id_inventaire = im.id
         ORDER BY i.id, im.date_installation ASC
     ) b ON i.id = b.id_intervention
 WHERE
@@ -101,31 +100,25 @@ WHERE
 SELECT im.*
 FROM
     interventions i
-    INNER JOIN interventions_inventaires a ON i.id = a.id_intervention
-    INNER JOIN inventaire_mobiliers im ON a.id_inventaire = im.id
+    INNER JOIN inventaire_mobiliers im ON i.id_inventaire = im.id
     LEFT JOIN types_inventaire ti ON im.id_type_inventaire = ti.id
 WHERE
     ti.libelle = 'lampadaire';
 
 -- Signalements
 -- Vérification des erreurs
-SELECT s.id, s.inventaire_mobilier, s.date_signalement
+SELECT s.id, s.id_inventaire, s.date_signalement
 FROM public.signalements s
     LEFT JOIN (
         SELECT DISTINCT
             ON (s.id) s.id AS id_signalement, im.id AS id_inventaire
         FROM
             public.inventaire_mobiliers im
-            LEFT JOIN types_inventaire ti ON im.id_type_inventaire = ti.id
-            INNER JOIN public.signalements s ON s.inventaire_mobilier ILIKE '%' || ti.libelle || '%' || im.lieu || '%'
+            INNER JOIN public.signalements s ON s.id_inventaire = im.id
         ORDER BY s.id, im.date_installation ASC
     ) b ON s.id = b.id_signalement
 WHERE
     b.id_signalement IS NULL;
-
-SELECT * FROM interventions_inventaires;
-
-SELECT * FROM signalements_inventaires;
 
 SELECT * FROM public.inventaire_mobiliers;
 
