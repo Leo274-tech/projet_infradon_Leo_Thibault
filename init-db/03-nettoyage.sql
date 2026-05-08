@@ -121,13 +121,15 @@ SELECT
         WHEN LOWER(id_etat) LIKE '%usé%' THEN 3
     END AS id_etat,
     remarques
-FROM staging.inventaire_mobiliers;
+FROM staging.inventaire_mobiliers
+ON CONFLICT (id_inventaire) DO NOTHING;
 
 INSERT INTO
     public.signalements (
         date_signalement,
         signale_par,
         inventaire_mobilier, -- colonne temporaire pour permettre une jointure
+        id_inventaire,
         description_probleme,
         id_urgence,
         id_statut
@@ -136,6 +138,15 @@ SELECT
     normalize_date (date_signalement) AS date_signalement,
     signale_par,
     inventaire_mobilier,
+    (
+        SELECT im.id
+        FROM public.inventaire_mobiliers im
+            LEFT JOIN public.types_inventaire ti ON im.id_type_inventaire = ti.id
+        WHERE
+            s.inventaire_mobilier ILIKE '%' || ti.libelle || '%' || im.lieu || '%'
+        ORDER BY im.date_installation ASC
+        LIMIT 1
+    ) AS id_inventaire,
     description_probleme,
     CASE
         WHEN s.id_urgence IS NULL
@@ -155,6 +166,7 @@ INSERT INTO
     public.interventions (
         date_intervention,
         inventaire_mobilier, -- colonne temporaire pour permettre une jointure
+        id_inventaire,
         type_intervention,
         technicien,
         duree_heure,
@@ -165,6 +177,15 @@ INSERT INTO
 SELECT
     normalize_date (date_intervention) AS date_intervention,
     inventaire_mobilier,
+    (
+        SELECT im.id
+        FROM public.inventaire_mobiliers im
+            LEFT JOIN public.types_inventaire ti_inv ON im.id_type_inventaire = ti_inv.id
+        WHERE
+            i.inventaire_mobilier ILIKE '%' || ti_inv.libelle || '%' || im.lieu || '%'
+        ORDER BY im.date_installation ASC
+        LIMIT 1
+    ) AS id_inventaire,
     CASE
         WHEN LOWER(type_intervention) LIKE '%' || ti.libelle || '%' THEN ti.id
         ELSE (
@@ -211,30 +232,7 @@ FROM
     staging.interventions i
     LEFT JOIN types_intervention ti ON LOWER(i.type_intervention) LIKE '%' || ti.libelle || '%';
 
-INSERT INTO
-    public.interventions_inventaires (
-        id_intervention,
-        id_inventaire
-    )
-SELECT DISTINCT
-    ON (i.id) i.id AS id_intervention,
-    im.id AS id_inventaire
-FROM public.inventaire_mobiliers im
-    LEFT JOIN public.types_inventaire ti ON im.id_type_inventaire = ti.id
-    INNER JOIN public.interventions i ON i.inventaire_mobilier ILIKE '%' || ti.libelle || '%' || im.lieu || '%'
-ORDER BY i.id, im.date_installation ASC;
-
 ALTER TABLE public.interventions DROP COLUMN inventaire_mobilier;
-
-INSERT INTO
-    public.signalements_inventaires (id_signalement, id_inventaire)
-SELECT DISTINCT
-    ON (s.id) s.id AS id_signalement,
-    im.id AS id_inventaire
-FROM public.inventaire_mobiliers im
-    LEFT JOIN public.types_inventaire ti ON im.id_type_inventaire = ti.id
-    INNER JOIN public.signalements s ON s.inventaire_mobilier ILIKE '%' || ti.libelle || '%' || im.lieu || '%'
-ORDER BY s.id, im.date_installation ASC;
 
 ALTER TABLE public.signalements DROP COLUMN inventaire_mobilier;
 
