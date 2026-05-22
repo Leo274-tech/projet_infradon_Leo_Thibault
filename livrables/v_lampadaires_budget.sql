@@ -1,14 +1,14 @@
 WITH cout_moyen AS (
 
     SELECT 
-        AVG(i.cout_materiaux) AS cout_moyen
+        AVG(i.cout_materiau) AS cout_moyen
 
     FROM interventions i
 
     LEFT JOIN types_intervention ti
-        ON i.id_type_intervention = ti.id
+        ON i.type_intervention = ti.id
 
-    WHERE ti.libelle = 'remplacement complet'
+    WHERE ti.libelle = 'remplacement'
 ),
 
 lampadaires_prioritaires AS (
@@ -26,14 +26,14 @@ lampadaires_prioritaires AS (
         us.libelle AS urgence,
 
         CASE
-            WHEN ei.libelle = 'Hors service' THEN 100
+            WHEN ei.libelle = 'à remplacer' THEN 100
             WHEN ei.libelle = 'Dégradé' THEN 50
             ELSE 10
         END AS score_priorite,
 
         cm.cout_moyen
 
-    FROM inventaires inv
+    FROM inventaire_mobiliers inv
 
     LEFT JOIN types_materiau tm
         ON inv.id_type_materiau = tm.id
@@ -45,7 +45,7 @@ lampadaires_prioritaires AS (
         ON inv.id = s.id_inventaire
 
     LEFT JOIN urgences_signalement us
-        ON s.id_urgences_signalement = us.id
+        ON s.id_urgence = us.id
 
     CROSS JOIN cout_moyen cm
 ),
