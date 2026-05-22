@@ -1,33 +1,70 @@
-SELECT 
-    i.id_inventaire,
-    i.geom AS position,
-    i.id_type_inventaire,
-    i.id_etat,
-    i.date_installation,
-    i.remarques,
+WITH cout_moyen AS (
 
-    tm.libelle AS materiau,
-    ei.libelle AS etat,
-    us.libelle AS urgence,
+    SELECT 
+        AVG(i.cout_materiaux) AS cout_moyen
 
-    CASE
-    WHEN ei.libelle = 'Hors service' THEN 100
-    WHEN ei.libelle = 'Dégradé' THEN 50
-    ELSE 10
-END AS score_priorite
+    FROM interventions i
 
-FROM inventaires i
+    LEFT JOIN types_intervention ti
+        ON i.id_type_intervention = ti.id
 
-LEFT JOIN types_materiau tm
-    ON i.id_type_materiau = tm.id
+    WHERE ti.libelle = 'remplacement complet'
+),
 
-LEFT JOIN etats_inventaire ei
-    ON i.id_etat = ei.id
+lampadaires_prioritaires AS (
 
-LEFT JOIN signalements s
-    ON i.id = s.id_inventaire
+    SELECT 
+        inv.id_inventaire,
+        inv.geom AS position,
+        inv.id_type_inventaire,
+        inv.id_etat,
+        inv.date_installation,
+        inv.remarques,
 
-LEFT JOIN urgences_signalement us
-    ON s.id_urgences_signalement = us.id
+        tm.libelle AS materiau,
+        ei.libelle AS etat,
+        us.libelle AS urgence,
 
-    AVG (couts_materiau) AS cout_moyen -- calcul du cout moyen de remplacement
+        CASE
+            WHEN ei.libelle = 'Hors service' THEN 100
+            WHEN ei.libelle = 'Dégradé' THEN 50
+            ELSE 10
+        END AS score_priorite,
+
+        cm.cout_moyen
+
+    FROM inventaires inv
+
+    LEFT JOIN types_materiau tm
+        ON inv.id_type_materiau = tm.id
+
+    LEFT JOIN etats_inventaire ei
+        ON inv.id_etat = ei.id
+
+    LEFT JOIN signalements s
+        ON inv.id = s.id_inventaire
+
+    LEFT JOIN urgences_signalement us
+        ON s.id_urgences_signalement = us.id
+
+    CROSS JOIN cout_moyen cm
+),
+
+budget_cumule AS (
+
+    SELECT 
+        *,
+
+        SUM(cout_moyen) OVER (
+            ORDER BY score_priorite DESC
+        ) AS cout_cumule
+
+    FROM lampadaires_prioritaires
+)
+
+SELECT *
+FROM budget_cumule
+
+WHERE cout_cumule <= 50000
+
+ORDER BY score_priorite DESC;
