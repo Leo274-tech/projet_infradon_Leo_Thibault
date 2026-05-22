@@ -11,60 +11,38 @@ WITH cout_moyen AS (
     WHERE ti.libelle = 'remplacement'
 ),
 
-lampadaires_prioritaires AS (
+budget AS (
 
     SELECT 
-        inv.id_inventaire,
-        inv.geom AS position,
-        inv.id_type_inventaire,
-        inv.id_etat,
-        inv.date_installation,
-        inv.remarques,
-
-        tm.libelle AS materiau,
-        ei.libelle AS etat,
+        im.*,
         us.libelle AS urgence,
 
-        CASE
-            WHEN ei.libelle = 'à remplacer' THEN 100
-            WHEN ei.libelle = 'Dégradé' THEN 50
-            ELSE 10
-        END AS score_priorite,
-
-        cm.cout_moyen
-
-    FROM inventaire_mobiliers inv
-
-    LEFT JOIN types_materiau tm
-        ON inv.id_type_materiau = tm.id
-
-    LEFT JOIN etats_inventaire ei
-        ON inv.id_etat = ei.id
-
-    LEFT JOIN signalements s
-        ON inv.id = s.id_inventaire
-
-    LEFT JOIN urgences_signalement us
-        ON s.id_urgence = us.id
-
-    CROSS JOIN cout_moyen cm
-),
-
-budget_cumule AS (
-
-    SELECT 
-        *,
-
-        SUM(cout_moyen) OVER (
-            ORDER BY score_priorite DESC
+        SUM(cm.cout_moyen) OVER (
+            ORDER BY us.libelle DESC NULLS LAST, im.id
         ) AS cout_cumule
 
-    FROM lampadaires_prioritaires
+    FROM inventaire_mobiliers im
+
+    LEFT JOIN interventions i
+        ON im.id = i.id_inventaire
+
+    LEFT JOIN signalements s
+        ON im.id = s.id_inventaire
+
+    INNER JOIN urgences_signalement us
+        ON s.id_urgence = us.id
+
+    LEFT JOIN types_inventaire ti
+        ON im.id_type_inventaire = ti.id
+
+    CROSS JOIN cout_moyen cm
+
+    WHERE ti.libelle = 'lampadaire'
 )
 
 SELECT *
-FROM budget_cumule
+FROM budget
 
 WHERE cout_cumule <= 50000
 
-ORDER BY score_priorite DESC;
+ORDER BY urgence DESC NULLS LAST;
