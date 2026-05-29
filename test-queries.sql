@@ -89,8 +89,7 @@ FROM public.interventions i
     LEFT JOIN (
         SELECT DISTINCT
             ON (i.id) i.id AS id_intervention, im.id AS id_inventaire
-        FROM
-            public.inventaire_mobiliers im
+        FROM public.inventaire_mobiliers im
             INNER JOIN public.interventions i ON i.id_inventaire = im.id
         ORDER BY i.id, im.date_installation ASC
     ) b ON i.id = b.id_intervention
@@ -112,8 +111,7 @@ FROM public.signalements s
     LEFT JOIN (
         SELECT DISTINCT
             ON (s.id) s.id AS id_signalement, im.id AS id_inventaire
-        FROM
-            public.inventaire_mobiliers im
+        FROM public.inventaire_mobiliers im
             INNER JOIN public.signalements s ON s.id_inventaire = im.id
         ORDER BY s.id, im.date_installation ASC
     ) b ON s.id = b.id_signalement
@@ -136,3 +134,11 @@ SELECT tm.libelle
 FROM
     inventaire_mobiliers
     LEFT JOIN types_materiau tm ON inventaire_mobiliers.id_type_materiau = tm.id;
+
+SELECT f.entreprise, ti.libelle, im.*
+FROM
+    fournisseurs f
+    INNER JOIN inventaire_mobiliers im ON f.id = im.id_fournisseur
+    LEFT JOIN types_inventaire ti ON im.id_type_inventaire = ti.id
+WHERE
+    im.date_installation < '2020.01.01';

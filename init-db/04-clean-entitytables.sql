@@ -32,13 +32,14 @@ INSERT INTO
         geom,
         date_installation,
         id_etat,
-        remarques
+        remarques,
+        id_fournisseur
     )
 SELECT
-    im.id_inventaire,
-    COALESCE(ti.id, (SELECT id FROM public.types_inventaire WHERE libelle = 'autre')),
-    tm.id,
-    im.lieu,
+    im.id_inventaire AS id_inventaire,
+    COALESCE(ti.id, (SELECT id FROM public.types_inventaire WHERE libelle = 'autre')) AS id_type_inventaire,
+    tm.id AS id_type_materiau,
+    im.lieu AS lieu,
     ST_SetSRID (
         ST_MakePoint (
             (
@@ -49,8 +50,9 @@ SELECT
         2056
     ) AS geom,
     normalize_date (im.date_installation) AS date_installation,
-    ei.id,
-    im.remarques
+    ei.id AS id_etat,
+    im.remarques AS remarques,
+    f.id AS id_fournisseur
 FROM staging.inventaire_mobiliers im
     LEFT JOIN public.types_inventaire ti ON (
         LOWER(im.id_type_inventaire) LIKE '%' || ti.libelle || '%'
@@ -62,6 +64,8 @@ FROM staging.inventaire_mobiliers im
         (LOWER(im.id_etat) LIKE '%remplace%' AND ei.libelle = 'à remplacer')
         OR (LOWER(im.id_etat) LIKE '%' || ei.libelle || '%')
     )
+    LEFT JOIN staging.fournisseurs_inventaire sfi ON im.id_inventaire = sfi.id_inventaire
+    LEFT JOIN public.fournisseurs f ON LOWER(TRIM(sfi.entreprise)) = LOWER(TRIM(f.entreprise))
 ON CONFLICT (id_inventaire) DO NOTHING;
 
 INSERT INTO

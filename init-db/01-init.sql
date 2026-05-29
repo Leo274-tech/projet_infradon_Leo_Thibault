@@ -55,7 +55,8 @@ CREATE TABLE IF NOT EXISTS inventaire_mobiliers (
     geom GEOMETRY(POINT, 2056),
     date_installation DATE,
     id_etat INTEGER REFERENCES etats_inventaire(id),
-    remarques VARCHAR(120)
+    remarques VARCHAR(120),
+    id_fournisseur INTEGER REFERENCES fournisseurs(id)
 );
 
 CREATE TABLE IF NOT EXISTS signalements (

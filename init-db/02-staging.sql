@@ -46,7 +46,7 @@ CREATE TABLE staging.fournisseurs (
 );
 
 -- Miroir du fichier fournisseur_inventaire.csv
-CREATE TABLE staging.fournisseur_inventaire (
+CREATE TABLE staging.fournisseurs_inventaire (
     id_inventaire TEXT,
     type TEXT,
     materiau TEXT,
@@ -72,7 +72,7 @@ WITH (
         ENCODING 'UTF8'
     );
 
-COPY staging.fournisseur_inventaire
+COPY staging.fournisseurs_inventaire
 FROM '/csv/fournisseur_inventaire.csv'
 WITH (
         FORMAT csv,
