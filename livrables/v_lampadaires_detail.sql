@@ -1,6 +1,6 @@
 -- Active: 1776325076709@@127.0.0.1@5432@infradon
 SELECT 
-    im.id_inventaire AS id_lampadaire,
+    im.id_inventaire_mobilier AS id_lampadaire,
     im.lieu AS lieu_lampadaire,
     tm.libelle AS materiau,
     EXTRACT(YEAR FROM im.date_installation) AS annee_installation,
@@ -17,7 +17,7 @@ LEFT JOIN types_inventaire t
     ON im.id_type_inventaire = t.id
 
 LEFT JOIN interventions i
-    ON im.id = i.id_inventaire
+    ON im.id = i.id_inventaire_mobilier
 
     LEFT JOIN types_materiau tm 
 
@@ -26,4 +26,5 @@ LEFT JOIN interventions i
 WHERE t.libelle = 'lampadaire'
 
 GROUP BY
-    im.id, im.lieu, t.libelle, im.date_installation, im.geom, tm.libelle;
+    im.id, im.lieu, t.libelle, im.date_installation, im.geom, tm.libelle
+ORDER BY nb_pannes DESC NULLS LAST;

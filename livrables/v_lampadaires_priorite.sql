@@ -1,16 +1,16 @@
 -- Active: 1776325076709@@127.0.0.1@5432@infradon
 -- Requête minimale
 SELECT
-    im.id_inventaire,
+    im.id_inventaire_mobilier,
     (COUNT(i.*) * 3) + (EXTRACT(YEAR FROM AGE(im.date_installation)) * 2) + (SUM(i.cout_materiau) / 100) AS score
 FROM
     inventaire_mobiliers im
-    LEFT JOIN interventions i ON im.id = i.id_inventaire
+    LEFT JOIN interventions i ON im.id = i.id_inventaire_mobilier
     INNER JOIN types_inventaire ti ON im.id_type_inventaire = ti.id
 WHERE
     ti.libelle = 'lampadaire'
 GROUP BY
-    im.id_inventaire,
+    im.id_inventaire_mobilier,
     im.date_installation
 ORDER BY
     score DESC NULLS LAST;
@@ -29,7 +29,7 @@ WITH
             lieu
     )
 SELECT
-    im.id_inventaire,
+    im.id_inventaire_mobilier,
     ti.libelle,
     im.lieu,
     nz.nb_lampadaire AS nb_dans_lieu,
@@ -39,13 +39,13 @@ SELECT
     (COUNT(i.*) * 3) + (EXTRACT(YEAR FROM AGE(im.date_installation)) * 2) + (SUM(i.cout_materiau) / 100) AS score_final
 FROM
     inventaire_mobiliers im
-    LEFT JOIN interventions i ON im.id = i.id_inventaire
+    LEFT JOIN interventions i ON im.id = i.id_inventaire_mobilier
     INNER JOIN types_inventaire ti ON im.id_type_inventaire = ti.id
     INNER JOIN nb_par_zone nz ON im.lieu = nz.lieu
 WHERE
     ti.libelle = 'lampadaire'
 GROUP BY
-    im.id_inventaire,
+    im.id_inventaire_mobilier,
     ti.libelle,
     im.lieu,
     nz.nb_lampadaire,

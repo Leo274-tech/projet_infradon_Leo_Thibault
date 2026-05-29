@@ -4,7 +4,7 @@ CREATE SCHEMA IF NOT EXISTS staging;
 
 -- Miroir du fichier mobilier.csv
 CREATE TABLE staging.inventaire_mobiliers (
-    id_inventaire TEXT,
+    id_inventaire_mobilier TEXT,
     id_type_inventaire TEXT,
     id_type_materiau TEXT,
     lieu TEXT,
@@ -47,7 +47,7 @@ CREATE TABLE staging.fournisseurs (
 
 -- Miroir du fichier fournisseur_inventaire.csv
 CREATE TABLE staging.fournisseurs_inventaire (
-    id_inventaire TEXT,
+    id_inventaire_mobilier TEXT,
     type TEXT,
     materiau TEXT,
     entreprise TEXT

@@ -25,7 +25,7 @@ FROM staging.fournisseurs;
 
 INSERT INTO
     public.inventaire_mobiliers (
-        id_inventaire,
+        id_inventaire_mobilier,
         id_type_inventaire,
         id_type_materiau,
         lieu,
@@ -36,7 +36,7 @@ INSERT INTO
         id_fournisseur
     )
 SELECT
-    im.id_inventaire AS id_inventaire,
+    im.id_inventaire_mobilier AS id_inventaire_mobilier,
     COALESCE(ti.id, (SELECT id FROM public.types_inventaire WHERE libelle = 'autre')) AS id_type_inventaire,
     tm.id AS id_type_materiau,
     im.lieu AS lieu,
@@ -64,16 +64,16 @@ FROM staging.inventaire_mobiliers im
         (LOWER(im.id_etat) LIKE '%remplace%' AND ei.libelle = 'à remplacer')
         OR (LOWER(im.id_etat) LIKE '%' || ei.libelle || '%')
     )
-    LEFT JOIN staging.fournisseurs_inventaire sfi ON im.id_inventaire = sfi.id_inventaire
+    LEFT JOIN staging.fournisseurs_inventaire sfi ON im.id_inventaire_mobilier = sfi.id_inventaire_mobilier
     LEFT JOIN public.fournisseurs f ON LOWER(TRIM(sfi.entreprise)) = LOWER(TRIM(f.entreprise))
-ON CONFLICT (id_inventaire) DO NOTHING;
+ON CONFLICT (id_inventaire_mobilier) DO NOTHING;
 
 INSERT INTO
     public.signalements (
         date_signalement,
         signale_par,
         inventaire_mobilier, -- colonne temporaire pour permettre une jointure
-        id_inventaire,
+        id_inventaire_mobilier,
         description_probleme,
         id_urgence,
         id_statut
@@ -90,7 +90,7 @@ SELECT
             s.inventaire_mobilier ILIKE '%' || ti.libelle || '%' || im.lieu || '%'
         ORDER BY im.date_installation ASC
         LIMIT 1
-    ) AS id_inventaire,
+    ) AS id_inventaire_mobilier,
     description_probleme,
     CASE
         WHEN s.id_urgence IS NULL
@@ -110,7 +110,7 @@ INSERT INTO
     public.interventions (
         date_intervention,
         inventaire_mobilier, -- colonne temporaire pour permettre une jointure
-        id_inventaire,
+        id_inventaire_mobilier,
         type_intervention,
         technicien,
         duree_heure,
@@ -129,7 +129,7 @@ SELECT
             i.inventaire_mobilier ILIKE '%' || ti_inv.libelle || '%' || im.lieu || '%'
         ORDER BY im.date_installation ASC
         LIMIT 1
-    ) AS id_inventaire,
+    ) AS id_inventaire_mobilier,
     CASE
         WHEN LOWER(type_intervention) LIKE '%' || ti.libelle || '%' THEN ti.id
         ELSE (
