@@ -63,8 +63,8 @@ CREATE TABLE IF NOT EXISTS signalements (
     id SERIAL PRIMARY KEY,
     date_signalement DATE,
     signale_par VARCHAR(50),
-    inventaire_mobilier TEXT NOT NULL, -- colonne temporaire pour permettre une jointure
-    id_inventaire_mobilier INTEGER REFERENCES inventaire_mobiliers(id),
+    inventaire_mobilier TEXT, -- colonne temporaire pour permettre une jointure
+    id_inventaire_mobilier INTEGER REFERENCES inventaire_mobiliers(id) NOT NULL,
     description_probleme TEXT NOT NULL, 
     id_urgence INTEGER REFERENCES urgences_signalement(id),
     id_statut INTEGER REFERENCES statuts_signalement(id)
@@ -74,9 +74,9 @@ CREATE TABLE IF NOT EXISTS signalements (
 CREATE TABLE IF NOT EXISTS interventions (
     id SERIAL PRIMARY KEY,
     date_intervention DATE,
-    inventaire_mobilier TEXT NOT NULL, -- colonne temporaire pour permettre une jointure
-    id_inventaire_mobilier INTEGER REFERENCES inventaire_mobiliers(id),
-    type_intervention INTEGER REFERENCES types_intervention(id),
+    inventaire_mobilier TEXT, -- colonne temporaire pour permettre une jointure
+    id_inventaire_mobilier INTEGER REFERENCES inventaire_mobiliers(id) NOT NULL,
+    type_intervention INTEGER REFERENCES types_intervention(id) NOT NULL,
     technicien VARCHAR(30),
     duree_heure REAL,
     cout_materiau FLOAT,

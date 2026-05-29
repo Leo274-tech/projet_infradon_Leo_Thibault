@@ -1,8 +1,6 @@
 -- Active: 1776325076709@@127.0.0.1@5432@infradon
 -- Requête minimale
-SELECT
-    im.id_inventaire_mobilier,
-    (COUNT(i.*) * 3) + (EXTRACT(YEAR FROM AGE(im.date_installation)) * 2) + (SUM(i.cout_materiau) / 100) AS score
+SELECT im.id_inventaire_mobilier, (COUNT(i.*) * 3) + (EXTRACT(YEAR FROM AGE (im.date_installation)) * 2) + (COALESCE(SUM(i.cout_materiau), 0) / 100) AS score
 FROM
     inventaire_mobiliers im
     LEFT JOIN interventions i ON im.id = i.id_inventaire_mobilier
@@ -12,9 +10,7 @@ WHERE
 GROUP BY
     im.id_inventaire_mobilier,
     im.date_installation
-ORDER BY
-    score DESC NULLS LAST;
-
+ORDER BY score DESC;
 
 -- Requête complète (avec plus de contexte)
 WITH
@@ -34,9 +30,9 @@ SELECT
     im.lieu,
     nz.nb_lampadaire AS nb_dans_lieu,
     COUNT(i.*) AS nombre_intervention,
-    EXTRACT(YEAR FROM AGE(im.date_installation)) AS age_en_annees,
-    SUM(i.cout_materiau) AS cout_total,
-    (COUNT(i.*) * 3) + (EXTRACT(YEAR FROM AGE(im.date_installation)) * 2) + (SUM(i.cout_materiau) / 100) AS score_final
+    EXTRACT(YEAR FROM AGE (im.date_installation)) AS age_en_annees,
+    COALESCE(SUM(i.cout_materiau), 0) AS cout_total,
+    (COUNT(i.id) * 3) + (EXTRACT(YEAR FROM AGE (im.date_installation)) * 2) + (COALESCE(SUM(i.cout_materiau), 0) / 100) AS score_final
 FROM
     inventaire_mobiliers im
     LEFT JOIN interventions i ON im.id = i.id_inventaire_mobilier
@@ -50,5 +46,4 @@ GROUP BY
     im.lieu,
     nz.nb_lampadaire,
     im.date_installation
-ORDER BY
-    score_final DESC NULLS LAST;
+ORDER BY score_final DESC;
