@@ -11,16 +11,12 @@ INSERT INTO
     )
 SELECT
     pf.id AS id_fournisseur,
-    CASE
-        WHEN LOWER(TRIM(fn.types_normalises)) LIKE '%lampadaire%' THEN 1
-        WHEN LOWER(TRIM(fn.types_normalises)) LIKE '%fontaine%' THEN 2
-        WHEN LOWER(TRIM(fn.types_normalises)) LIKE '%banc%' THEN 3
-        WHEN LOWER(TRIM(fn.types_normalises)) LIKE '%poubelle%' THEN 4
-        WHEN LOWER(TRIM(fn.types_normalises)) LIKE '%corbeille%' THEN 4
-        WHEN LOWER(TRIM(fn.types_normalises)) LIKE '%borne%' THEN 5
-        WHEN LOWER(TRIM(fn.types_normalises)) LIKE '%panneau%' THEN 6
-        ELSE 7 -- 'autre'
-    END AS id_type_inventaire
+    COALESCE(ti.id, (SELECT id FROM public.types_inventaire WHERE libelle = 'autre')) AS id_type_inventaire
 FROM
     fournisseurs_normalises fn
-    INNER JOIN public.fournisseurs pf ON fn.entreprise = pf.entreprise;
+    INNER JOIN public.fournisseurs pf ON fn.entreprise = pf.entreprise
+    LEFT JOIN public.types_inventaire ti ON (
+        LOWER(TRIM(fn.types_normalises)) LIKE '%' || ti.libelle || '%'
+        OR (LOWER(TRIM(fn.types_normalises)) LIKE '%corbeille%' AND ti.libelle = 'poubelle')
+        OR (LOWER(TRIM(fn.types_normalises)) LIKE '%borne%' AND ti.libelle = 'borne recharge')
+    );

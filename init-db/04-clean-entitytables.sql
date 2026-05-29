@@ -35,44 +35,33 @@ INSERT INTO
         remarques
     )
 SELECT
-    id_inventaire,
-    CASE
-        WHEN LOWER(id_type_inventaire) LIKE '%lampadaire%' THEN 1
-        WHEN LOWER(id_type_inventaire) LIKE '%fontaine%' THEN 2
-        WHEN LOWER(id_type_inventaire) LIKE '%banc%' THEN 3
-        WHEN LOWER(id_type_inventaire) LIKE '%poubelle%' THEN 4
-        WHEN LOWER(id_type_inventaire) LIKE '%corbeille%' THEN 4
-        WHEN LOWER(id_type_inventaire) LIKE '%borne%' THEN 5
-        WHEN LOWER(id_type_inventaire) LIKE '%panneau%' THEN 6
-        ELSE 7 -- 'autre'
-    END AS id_type_inventaire,
-    CASE
-        WHEN LOWER(id_type_materiau) LIKE '%bois%' THEN 1
-        WHEN LOWER(id_type_materiau) LIKE '%métal%' THEN 2
-        WHEN LOWER(id_type_materiau) LIKE '%sodium%' THEN 3
-        WHEN LOWER(id_type_materiau) LIKE '%led%' THEN 4
-        WHEN LOWER(id_type_materiau) LIKE '%pierre%' THEN 5
-        WHEN LOWER(id_type_materiau) LIKE '%béton%' THEN 6
-        ELSE NULL
-    END AS id_type_materiau,
-    lieu,
+    im.id_inventaire,
+    COALESCE(ti.id, (SELECT id FROM public.types_inventaire WHERE libelle = 'autre')),
+    tm.id,
+    im.lieu,
     ST_SetSRID (
         ST_MakePoint (
             (
-                CAST(latitude AS DOUBLE PRECISION)
+                CAST(im.latitude AS DOUBLE PRECISION)
             ),
-            CAST(longitude AS DOUBLE PRECISION)
+            CAST(im.longitude AS DOUBLE PRECISION)
         ),
         2056
     ) AS geom,
-    normalize_date (date_installation) AS date_installation,
-    CASE
-        WHEN LOWER(id_etat) LIKE '%remplace%' THEN 1
-        WHEN LOWER(id_etat) LIKE '%bon%' THEN 2
-        WHEN LOWER(id_etat) LIKE '%usé%' THEN 3
-    END AS id_etat,
-    remarques
-FROM staging.inventaire_mobiliers
+    normalize_date (im.date_installation) AS date_installation,
+    ei.id,
+    im.remarques
+FROM staging.inventaire_mobiliers im
+    LEFT JOIN public.types_inventaire ti ON (
+        LOWER(im.id_type_inventaire) LIKE '%' || ti.libelle || '%'
+        OR (LOWER(im.id_type_inventaire) LIKE '%corbeille%' AND ti.libelle = 'poubelle')
+        OR (LOWER(im.id_type_inventaire) LIKE '%borne%' AND ti.libelle = 'borne recharge')
+    )
+    LEFT JOIN public.types_materiau tm ON LOWER(im.id_type_materiau) LIKE '%' || tm.libelle || '%'
+    LEFT JOIN public.etats_inventaire ei ON (
+        (LOWER(im.id_etat) LIKE '%remplace%' AND ei.libelle = 'à remplacer')
+        OR (LOWER(im.id_etat) LIKE '%' || ei.libelle || '%')
+    )
 ON CONFLICT (id_inventaire) DO NOTHING;
 
 INSERT INTO

@@ -1,20 +1,18 @@
 -- CRÉATION DES RÔLES (avec des mots de passe à redéfinir en production)
 CREATE ROLE admin;
-
 CREATE ROLE analyste;
-
 CREATE ROLE citoyen;
-
 CREATE ROLE responsable;
-
 CREATE ROLE technicien;
+CREATE ROLE fournisseur;
 
 -- ACCÈS AU SCHÉMA public
 GRANT USAGE ON SCHEMA public TO admin,
 analyste,
 citoyen,
 responsable,
-technicien;
+technicien,
+fournisseur;
 
 -- ATTRIBUTION DES PRIVILÈGES SPÉCIFIQUES
 -- ==========================================
@@ -63,3 +61,14 @@ GRANT INSERT, UPDATE ON interventions TO technicien;
 GRANT USAGE, SELECT ON SEQUENCE interventions_id_seq TO technicien;
 
 GRANT UPDATE ON signalements TO technicien;
+
+-- ==========================================
+-- FOURNISSEUR : Vue personnelle
+-- ==========================================
+GRANT
+SELECT
+    ON fournisseurs,
+    fournisseurs_typesinventaire,
+    inventaire_mobiliers,
+    types_inventaire
+    TO fournisseur;

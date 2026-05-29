@@ -35,7 +35,6 @@ CREATE TABLE staging.signalements (
     id_urgence TEXT,
     id_statut TEXT
 );
-
 -- Miroir du fichier fournisseurs.csv
 CREATE TABLE staging.fournisseurs (
     entreprise TEXT,
@@ -44,6 +43,14 @@ CREATE TABLE staging.fournisseurs (
     email TEXT,
     id_type_inventaire TEXT,
     remarques TEXT
+);
+
+-- Miroir du fichier fournisseur_inventaire.csv
+CREATE TABLE staging.fournisseur_inventaire (
+    id_inventaire TEXT,
+    type TEXT,
+    materiau TEXT,
+    entreprise TEXT
 );
 
 -- Importer les données d'Excel
@@ -56,6 +63,23 @@ WITH (
         ENCODING 'UTF8'
     );
 
+COPY staging.interventions
+FROM '/csv/interventions.csv'
+WITH (
+        FORMAT csv,
+        HEADER true,
+        DELIMITER ',',
+        ENCODING 'UTF8'
+    );
+
+COPY staging.fournisseur_inventaire
+FROM '/csv/fournisseur_inventaire.csv'
+WITH (
+        FORMAT csv,
+        HEADER true,
+        DELIMITER ';',
+        ENCODING 'UTF8'
+    );
 COPY staging.inventaire_mobiliers
 FROM '/csv/inventaire_mobilier.csv'
 WITH (
