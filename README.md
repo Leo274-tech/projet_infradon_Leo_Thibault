@@ -8,6 +8,7 @@
 
 ### Tables et Colonnes Importantes
 Les tables inventaire_mobiliers et interventions vont être primordiales pour le brief.
+
 inventaire_mobiliers :
 - id_inventaire_mobilier
 - id_type_materiel
@@ -19,14 +20,10 @@ interventions :
 - date_intervention
 - cout_materiau
 
-interventions_inventaires :
-- pour les jointures
-
-### Éléments Manquants & Limites
+## Éléments Manquants & Limites
 Dans les interventions, les inventaires du même type et du même lieu ne sont pas différencié. Si deux lampadaires partagent la même zone, il devront donc se partager également le nombre d'interventions.
 
-## Notes
-- La description de interventions(objet) n'était pas assez précise our relier les inventaire_mobiliers et les interventions. Certains lieux possèdent plusieurs objets du même type les rendant indistinguables. Nous avons donc choisi d'attribuer l'intervention à l'**objet d'inventaire le plus ancien** en cas de doute.
+La description de interventions(objet) n'était pas assez précise pour relier les inventaire_mobiliers et les interventions. Certains lieux possèdent plusieurs objets du même type les rendant indistinguables. Nous avons donc choisi d'attribuer l'intervention à l'**objet d'inventaire le plus ancien** en cas de doute.
 
 ## Modélisation des données
 ### Modlèle Conceptuel de Données (MCD) & Modlèle Logique de Données (MLD)
@@ -45,4 +42,4 @@ fichier : `livrables/v_lampadaires_priorite.sql`
 
 
 ### Budget lampadaires
-fichier : `livrables/v_lampadaires_budget.sql`
+*pas effectué*
